@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: hogehoge
+      MYSQL_PASSWORD: hogehoge
+    ports:
+      - '3306:3306'
+    volumes:
+      - datastore:/var/lib/mysql
+      - ./containers/db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+
+  rails:
+    build:
+      context: .
+      dockerfile: containers/rails/Dockerfile
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '80:80'
+    depends_on:
+      - db
+    environment:
+      PORT: 80
+      LANG: C.UTF-8
+      RAILS_ENV: development
+      DATABASE_HOST: "db"
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "hogehoge"
+
+volumes:
+  datastore: {}
