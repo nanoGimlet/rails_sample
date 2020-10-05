@@ -1,9 +1,30 @@
 <li id="micropost-<%= micropost.id %>">
-  <%= link_to gravatar_for(micropost.user, size: 50), micropost.user %>
-  <span class="user"><%= link_to micropost.user.name, micropost.user %></span>
-  <span class="content">
-    <%= micropost.content %>
-    <%= image_tag micropost.picture.url if micropost.picture? %>
+  <div>
+    <%= link_to gravatar_for(micropost.user, size: 50), micropost.user %>
+    <span class="user"><%= link_to micropost.user.name, micropost.user %></span>
+    <span class="unique_name">
+      <%= "@" %>
+      <%= micropost.user.unique_name %>
+    </span>
+    <span class="content">
+      <%= micropost.content %>
+      <%= image_tag micropost.picture.url if micropost.picture? %>
+    </span>
+  </div>
+  <div class="reply">
+    <% if micropost.microposts.present? %>
+      <% micropost.microposts.each do |reply| %>
+        <span>
+          <%= "@"+reply.user.unique_name %>
+          <%= reply.content %>
+          <%= image_tag reply.picture.url if reply.picture? %>
+          <br>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+  <span class="reply_space">
+    <%= render 'shared/reply_form', micropost: micropost %>
   </span>
   <span class="timestamp">
     Posted <%= time_ago_in_words(micropost.created_at) %> ago.

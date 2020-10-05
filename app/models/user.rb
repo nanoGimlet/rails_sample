@@ -18,6 +18,15 @@ class User < ApplicationRecord
                     uniqueness: { case_sensitive: false }
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  # 保存する前に一意ユーザ名を全て小文字に変換する
+  before_save :downcase_unique_name
+  # @一意ユーザ名の正規表現(大文字小文字を区別しない)
+  VALIE_UNIQUE_NAME_REGEX = /\A[a-z0-9_]+\z/i
+  # バリデーション
+  validates :unique_name, presence: true,
+                          length: { in: 5..15 },
+                          format: { with: VALIE_UNIQUE_NAME_REGEX },
+                          uniqueness: { case_sensitive: false }
 
   class << self
     # 渡された文字列のハッシュ値を返す
@@ -80,10 +89,9 @@ class User < ApplicationRecord
 
   # ユーザーのステータスフィードを返す
   def feed
-    following_ids = "SELECT followed_id FROM relationships
-                     WHERE follower_id = :user_id"
-    Micropost.where("user_id IN (#{following_ids})
-                     OR user_id = :user_id", user_id: id)
+    Micropost.where("user_id IN (:following_ids)
+                     OR user_id = :user_id
+                     OR in_reply_to = :user_id", following_ids: following_ids, user_id: id)
   end
 
   # ユーザーをフォローする
@@ -106,6 +114,11 @@ class User < ApplicationRecord
     # メールアドレスをすべて小文字にする
     def downcase_email
       email.downcase!
+    end
+
+    # 一意ユーザ名を全て小文字にする
+    def downcase_unique_name
+      self.unique_name.downcase!
     end
 
     # 有効化トークンとダイジェストを作成および代入する

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_19_015251) do
+ActiveRecord::Schema.define(version: 2020_10_05_125858) do
 
   create_table "microposts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "content"
@@ -18,6 +18,9 @@ ActiveRecord::Schema.define(version: 2020_09_19_015251) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "picture"
+    t.integer "in_reply_to"
+    t.bigint "micropost_id"
+    t.index ["micropost_id"], name: "index_microposts_on_micropost_id"
     t.index ["user_id", "created_at"], name: "index_microposts_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_microposts_on_user_id"
   end
@@ -45,8 +48,11 @@ ActiveRecord::Schema.define(version: 2020_09_19_015251) do
     t.datetime "activated_at"
     t.string "reset_digest"
     t.datetime "reset_sent_at"
+    t.string "unique_name", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["unique_name"], name: "index_users_on_unique_name", unique: true
   end
 
+  add_foreign_key "microposts", "microposts"
   add_foreign_key "microposts", "users"
 end
