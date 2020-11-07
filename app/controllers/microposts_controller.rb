@@ -19,7 +19,7 @@ class MicropostsController < ApplicationController
     end
     
     if @micropost.save
-      flash[:success] = "Micropost created!"
+      flash[:success] = :"Micropost created!"
       redirect_to root_url
     else
       @feed_items = []
@@ -29,7 +29,7 @@ class MicropostsController < ApplicationController
 
   def destroy
     @micropost.destroy
-    flash[:success] = "Micropost deleted"
+    flash[:success] = :"Micropost deleted"
     redirect_to request.referrer || root_url
   end
 
