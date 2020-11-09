@@ -1,5 +1,11 @@
 ja:
   activerecord:
+    errors:
+      messages:
+        record_invalid: 'バリデーションに失敗しました: %{errors}'
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"
     models:
       user: ユーザー
       relationship: 関係
@@ -10,6 +16,7 @@ ja:
         name: 名前
         email: メールアドレス
         password: パスワード
+        password_confirmation: パスワード確認
         unique_name: アカウント名
       relationship:
         id: ID
@@ -21,11 +28,17 @@ ja:
         content: 投稿内容
         user_id: 投稿者ID
         created_at: 作成日時
-    helpers:
-      submit:
-        user:
-          create: 作成
-        micropost:
-          create: 投稿
-        sessions:
-          create: ログイン
+  helpers:
+    submit:
+      user:
+        create: 作成
+        update: 保存
+      relationship:
+        create: フォロー
+      micropost:
+        create: 投稿
+  errors:
+    messages:
+      too_long: は%{count}文字以内で入力してください
+      too_short: は%{count}文字以上で入力してください
+      confirmation: と%{attribute}の入力が一致しません
