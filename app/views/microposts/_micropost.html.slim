@@ -1,6 +1,4 @@
-| <li id="micropost-
-= micropost.id
-| "> 
+li id="micropost-#{micropost.id}"
 div
   = link_to gravatar_for(micropost.user, size: 50), micropost.user
   span.user

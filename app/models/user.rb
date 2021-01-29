@@ -9,37 +9,45 @@ class User < ApplicationRecord
   has_many :following, through: :active_relationships, source: :followed
   has_many :followers, through: :passive_relationships, source: :follower
   attr_accessor :remember_token, :activation_token, :reset_token
-  before_save   :downcase_email
-  before_create :create_activation_digest
-  validates :name,  presence: true, length: { maximum: 50 }
+
+  # メールに関するvalidation
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-  validates :email, presence: true, length: { maximum: 255 },
-                    format: { with: VALID_EMAIL_REGEX },
-                    uniqueness: { case_sensitive: false }
+  class EmailValidator < ActiveModel::Validator
+    def validate(record)
+      before_save :downcase_email
+      before_create :create_activation_digest
+      validates :name, presence: true, length: { maximum: 50}
+      validates :email, presence: true, length: { maximum: 255},
+                        format: { with: VALID_EMAIL_REGEX },
+                        uniqueness: { case_sensitive: false}
+    end
+  end
+  validates_with EmailValidator
+
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
-  # 保存する前に一意ユーザ名を全て小文字に変換する
-  before_save :downcase_unique_name
-  # @一意ユーザ名の正規表現(大文字小文字を区別しない)
+  
+  # アカウント名に関するvalidation
   VALIE_UNIQUE_NAME_REGEX = /\A[a-z0-9_]+\z/i
-  # バリデーション
-  validates :unique_name, presence: true,
-                          length: { in: 5..15 },
-                          format: { with: VALIE_UNIQUE_NAME_REGEX },
-                          uniqueness: { case_sensitive: false }
-
-  class << self
-    # 渡された文字列のハッシュ値を返す
-    def digest(string)
-      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
-                                                    BCrypt::Engine.cost
-      BCrypt::Password.create(string, cost: cost)
+  class UniqueNameValidator < ActiveModel::Validator
+    def validate(record)
+      before_save :downcase_unique_name
+      validates :unique_name, presence: true,
+                              length: { in: 5..15 },
+                              format: { with: VALIE_UNIQUE_NAME_REGEX },
+                              uniqueness: { case_sensitive: false}
     end
+  end
+  validates_with UniqueNameValidator
 
-    # ランダムなトークンを返す
-    def new_token
-      SecureRandom.urlsafe_base64
-    end
+  def self.new_token
+    SecureRandom.urlsafe_base64
+  end
+
+  def self.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
   end
 
   # 永続セッションのためにユーザーをデータベースに記憶する
@@ -89,9 +97,7 @@ class User < ApplicationRecord
 
   # ユーザーのステータスフィードを返す
   def feed
-    Micropost.where("user_id IN (:following_ids)
-                     OR user_id = :user_id
-                     OR in_reply_to = :user_id", following_ids: following_ids, user_id: id)
+    Micropost.including_replies(self)
   end
 
   # ユーザーをフォローする
