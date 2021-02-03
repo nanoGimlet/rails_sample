@@ -7,7 +7,7 @@ class Micropost < ApplicationRecord
   validates :content, presence: true, length: { maximum: 140 }
   validate  :picture_size
 
-  scope: including_replies, -> (user) { 
+  scope :including_replies, -> (user) { 
     where(user_id: user.following_ids).or(where(user_id: user.id)).or(where(in_reply_to: user.id))
   }
 

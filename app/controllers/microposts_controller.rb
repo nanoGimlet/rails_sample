@@ -24,7 +24,7 @@ class MicropostsController < ApplicationController
     else
       @feed_items = []
       flash[:failure] = "マイクロポストの投稿に失敗しました。"
-      render :'static_pages/home'
+      render :'home_pages/home'
     end
   end
 
@@ -34,7 +34,7 @@ class MicropostsController < ApplicationController
       redirect_to request.referrer || root_url
     else
       flash[:failure] = "マイクロポストの削除に失敗しました。"
-      render :'static_pages/home'
+      render :'home_pages/home'
     end
   end
 

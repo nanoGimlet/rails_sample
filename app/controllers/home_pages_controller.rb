@@ -1,4 +1,4 @@
-class StaticPagesController < ApplicationController
+class HomePagesController < ApplicationController
   
   def home
     if logged_in?
