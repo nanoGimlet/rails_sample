@@ -36,13 +36,18 @@ class MicropostsControllerTest < ActionDispatch::IntegrationTest
   
     # archer(返信先ユーザ)のunique_name取得
     to_user = users(:archer)
-    unique_name = to_user.unique_name
+    unique_name = to_user.unique_name.to_s
   
     # 返信の内容
     content = "@#{unique_name} 返信テスト"
   
     # 返信を投稿
-    post microposts_path, params: { micropost: { content: content } }
+    assert_difference 'Micropost.count', 1 do
+      post microposts_path, params: { micropost: { content: content, user_id: from_user.id } }
+    end
+    assert_redirected_to root_url
+
+    # assert_equal to_user.unique_name, Micropost.first.content
   
     # 最新の投稿のin_reply_toが返信相手のユーザIDになっている
     assert_equal to_user.id, Micropost.first.in_reply_to

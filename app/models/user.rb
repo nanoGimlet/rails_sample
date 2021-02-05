@@ -1,3 +1,6 @@
+require './app/validators/email_validator'
+require './app/validators/unique_validator'
+
 class User < ApplicationRecord
   has_many :microposts, dependent: :destroy
   has_many :active_relationships, class_name:  "Relationship",
@@ -11,34 +14,21 @@ class User < ApplicationRecord
   attr_accessor :remember_token, :activation_token, :reset_token
 
   # メールに関するvalidation
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
-  class EmailValidator < ActiveModel::Validator
-    def validate(record)
-      before_save :downcase_email
-      before_create :create_activation_digest
-      validates :name, presence: true, length: { maximum: 50}
-      validates :email, presence: true, length: { maximum: 255},
-                        format: { with: VALID_EMAIL_REGEX },
-                        uniqueness: { case_sensitive: false}
-    end
-  end
-  validates_with EmailValidator
+  validates :name, presence: true, length: { maximum: 50}
+  validates :email, presence: true, length: { maximum: 255},
+                    uniqueness: { case_sensitive: false },
+                    email: true
+  before_save :downcase_email
+  before_create :create_activation_digest
 
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   
   # アカウント名に関するvalidation
-  VALIE_UNIQUE_NAME_REGEX = /\A[a-z0-9_]+\z/i
-  class UniqueNameValidator < ActiveModel::Validator
-    def validate(record)
-      before_save :downcase_unique_name
-      validates :unique_name, presence: true,
-                              length: { in: 5..15 },
-                              format: { with: VALIE_UNIQUE_NAME_REGEX },
-                              uniqueness: { case_sensitive: false}
-    end
-  end
-  validates_with UniqueNameValidator
+  before_save :downcase_unique_name
+  validates :unique_name, presence: true, length: {in: 5..15}, 
+                          uniqueness: { case_sensitive: false },
+                          unique: true
 
   def self.new_token
     SecureRandom.urlsafe_base64
@@ -81,8 +71,7 @@ class User < ApplicationRecord
   # パスワード再設定の属性を設定する
   def create_reset_digest
     self.reset_token = User.new_token
-    update_columns(reset_digest: User.digest(reset_token),
-                   reset_sent_at: Time.zone.now)
+    update_columns(reset_digest: User.digest(reset_token), reset_sent_at: Time.zone.now)
   end
 
   # パスワード再設定のメールを送信する

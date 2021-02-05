@@ -23,4 +23,4 @@ span.timestamp
   = time_ago_in_words(micropost.created_at)
   |  ago. 
   - if current_user?(micropost.user)
-    = link_to :"delete", micropost, method: :delete, data: { confirm: "You sure?" }
+    = link_to "delete", micropost, method: :delete, data: { confirm: "You sure?" }

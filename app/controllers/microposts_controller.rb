@@ -9,13 +9,14 @@ class MicropostsController < ApplicationController
     # 投稿文に対して上記正規表現をマッチング
     reply_user_name = @micropost.content.match(re)
 
-    # $1は正規表現の中の丸かっこの表現にマッチする内容が入る(つまりここでは一意ユーザ名)
     # マッチするものが無ければnil
     if reply_user_name
-      # マッチした一意ユーザ名は小文字にしてから検索します
-      reply_user = User.find_by(unique_name: reply_user_name.downcase)
+      reply_user_name_check = reply_user_name.to_s.downcase
+      reply_user = User.find_by(unique_name: reply_user_name_check)
       # 一意ユーザ名を持つ返信先ユーザが存在すればin_reply_toカラムにそのユーザIDをセット
-      @micropost.in_reply_to = reply_user&.id
+      if reply_user
+        @micropost.in_reply_to = reply_user.id
+      end
     end
     
     if @micropost.save
@@ -24,7 +25,7 @@ class MicropostsController < ApplicationController
     else
       @feed_items = []
       flash[:failure] = "マイクロポストの投稿に失敗しました。"
-      render :'home_pages/home'
+      redirect_to root_url
     end
   end
 

@@ -18,7 +18,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "email should be present" do
-    @user.email = "a" * 244 + "@example.com"
+    @user.email = "a" * 255 + "@example.com"
     assert_not @user.valid?
   end
 
