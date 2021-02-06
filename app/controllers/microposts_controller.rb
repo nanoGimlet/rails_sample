@@ -12,7 +12,8 @@ class MicropostsController < ApplicationController
     # マッチするものが無ければnil
     if reply_user_name
       reply_user_name_check = reply_user_name.to_s.downcase
-      reply_user = User.find_by(unique_name: reply_user_name_check)
+      reply_user_name_str = reply_user_name_check.delete("@")
+      reply_user = User.find_by(unique_name: reply_user_name_str)
       # 一意ユーザ名を持つ返信先ユーザが存在すればin_reply_toカラムにそのユーザIDをセット
       if reply_user
         @micropost.in_reply_to = reply_user.id

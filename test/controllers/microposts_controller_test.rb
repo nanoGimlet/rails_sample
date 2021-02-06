@@ -46,8 +46,6 @@ class MicropostsControllerTest < ActionDispatch::IntegrationTest
       post microposts_path, params: { micropost: { content: content, user_id: from_user.id } }
     end
     assert_redirected_to root_url
-
-    # assert_equal to_user.unique_name, Micropost.first.content
   
     # 最新の投稿のin_reply_toが返信相手のユーザIDになっている
     assert_equal to_user.id, Micropost.first.in_reply_to

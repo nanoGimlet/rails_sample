@@ -36,7 +36,7 @@ class PasswordResetsTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
     # メールアドレスもトークンも有効
     get edit_password_reset_path(user.reset_token, email: user.email)
-    assert_template "password_resets/edit"
+    assert_template 'password_resets/edit'
     assert_select "input[name=email][type=hidden][value=?]", user.email
     # 無効なパスワードとパスワード確認
     patch password_reset_path(user.reset_token),

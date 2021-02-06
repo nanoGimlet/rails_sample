@@ -67,33 +67,34 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
   
     # 返信の内容
     content = "@#{unique_name} 結合テストで返信テスト"
+
+    check_count = to_user.microposts.count
   
     # 返信元ユーザでログイン
     log_in_as(from_user)
   
     # 返信を投稿
-    post microposts_path, params: { micropost: { content: content } }
-  
-    # 投稿のid取得
-    micropost_id = from_user.microposts.first.id
+    assert_difference 'Micropost.count', 1 do
+      post microposts_path, params: { micropost: { content: content, user_id: from_user.id } }
+    end
   
     # 返信元ユーザのフィードに返信の投稿がある
     get root_path
-    assert_select "#micropost-#{micropost_id} span.content", text: content
+    assert_equal from_user.microposts.first.content, content
   
     # 返信先ユーザのフィードに返信の投稿がある
     log_in_as(to_user)
     get root_path
-    assert_select "#micropost-#{micropost_id} span.content", text: content
+    assert_equal to_user.feed.first.content, content
   
     # 返信元ユーザをフォローしているユーザのフィードに返信の投稿がある
     log_in_as(other_user1)
     get root_path
-    assert_select "#micropost-#{micropost_id} span.content", text: content
+    assert_equal other_user1.feed.first.content, content
   
     # 返信元ユーザをフォローしていないユーザのフィードに返信の投稿がない
     log_in_as(other_user2)
     get root_path
-    assert_no_match "micropost-#{micropost_id}", response.body
+    assert_equal other_user2.feed.count, 0
   end
 end
