@@ -33,8 +33,8 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :test
-  host = 'localhost:3000'                     # ローカル環境
-config.action_mailer.default_url_options = { host: host, protocol: 'http' }
+  host = 'localhost'                     # ローカル環境
+  config.action_mailer.default_url_options = { host: host, protocol: 'http' }
 
   config.action_mailer.perform_caching = false
 
@@ -61,4 +61,5 @@ config.action_mailer.default_url_options = { host: host, protocol: 'http' }
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+  config.web_console.whitelisted_ips = '172.19.0.1'
 end

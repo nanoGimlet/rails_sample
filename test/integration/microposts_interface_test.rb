@@ -40,15 +40,21 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
   test "micropost sidebar count" do
     log_in_as(@user)
     get root_path
-    assert_match "#{@user.microposts.count} microposts", response.body
+    micropost_cnt = @user.microposts.count
+    micropost_check = micropost_cnt.to_s + " micropost"
+    assert_match micropost_check, response.body
     # まだマイクロポストを投稿していないユーザー
     other_user = users(:malory)
     log_in_as(other_user)
     get root_path
-    assert_match "0 microposts", response.body
+    micropost_not_cnt = 0
+    micropost_not_check = micropost_not_cnt.to_s + " micropost"
+    assert_match micropost_not_check, response.body
     other_user.microposts.create!(content: "A micropost")
     get root_path
-    assert_match "1 micropost", response.body
+    micropost_one_cnt = 1
+    micropost_one_check = micropost_one_cnt.to_s + " micropost"
+    assert_match micropost_one_check, response.body
   end
 
   test "返信すると投稿者自身、返信先ユーザ、投稿者をフォローしているユーザのフィードだけにその投稿が表示されているか" do
