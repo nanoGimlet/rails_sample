@@ -1,0 +1,22 @@
+- provide(:title, "#{@micropost.user.name}'s micropost")
+.row
+  aside.col-md-4
+    = render 'users/follow_form'
+    section.user_info
+      h1
+        = gravatar_for @micropost.user
+        = @micropost.user.name
+        |  (@
+        = @micropost.user.user_name
+        | ) 
+    section.stats
+      = render 'shared/stats'
+  .col-md-8
+    h3
+      = @micropost.user.name
+      |  Micropost
+    ol.microposts
+      = render @micropost
+    - if logged_in?
+      section.micropost_form
+        = render 'shared/micropost_form'

@@ -1,0 +1,9 @@
+= link_to gravatar_for(current_user, size: 50), current_user
+h1
+  = current_user.name
+span
+  = '@'+current_user.unique_name
+span
+  = link_to "マイプロフィール", current_user
+span
+  = pluralize(current_user.microposts.count, "micropost")
