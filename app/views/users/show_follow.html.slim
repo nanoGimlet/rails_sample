@@ -13,7 +13,7 @@
         = @user.microposts.count
     section.stats
       = render 'shared/stats'
-      - if @users.any?
+      - if @users.present?
         .user_avatars
           - @users.each do |user|
             = link_to gravatar_for(user, size: 30), user

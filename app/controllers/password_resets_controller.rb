@@ -5,10 +5,6 @@ class PasswordResetsController < ApplicationController
   def new
   end
 
-  def user
-    @user ||= User.find_by(email: params[:email])
-  end
-
   def create
     @user = User.find_by(email: params[:password_reset][:email].downcase)
     if @user
@@ -50,9 +46,13 @@ class PasswordResetsController < ApplicationController
       params.require(:user).permit(:password, :password_confirmation)
     end
 
+    def user
+      @user ||= User.find_by(email: params[:email])
+    end
+
     # 正しいユーザーかどうか確認する
     def valid_user_check
-      unless (user && user.activated? && user.authenticated?(:reset, params[:id]))
+      unless (user && user&.activated? && user&.authenticated?(:reset, params[:id]))
         redirect_to root_url
       end
     end
