@@ -36,7 +36,7 @@ class MicropostsController < ApplicationController
       redirect_to request.referrer || root_url
     else
       flash[:failure] = "マイクロポストの削除に失敗しました。"
-      render :'home_pages/home'
+      render 'home_pages/home'
     end
   end
 

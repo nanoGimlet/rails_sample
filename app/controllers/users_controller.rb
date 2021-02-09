@@ -26,7 +26,7 @@ class UsersController < ApplicationController
       redirect_to root_url
     else
       flash[:failure] = "メールを送信できませんでした。"
-      render :'new'
+      render :new
     end
   end
 
@@ -41,7 +41,7 @@ class UsersController < ApplicationController
       redirect_to @user
     else
       flash[:failure] = "プロフィールの更新に失敗しました。"
-      render :'edit'
+      render :edit
     end
   end
 
@@ -59,14 +59,14 @@ class UsersController < ApplicationController
     @title = "Following"
     @user  = User.find(params[:id])
     @users = @user.following.paginate(page: params[:page])
-    render 'show_follow'
+    render :show_follow
   end
 
   def followers
     @title = "Followers"
     @user  = User.find(params[:id])
     @users = @user.followers.paginate(page: params[:page])
-    render 'show_follow'
+    render :show_follow
   end
 
   private

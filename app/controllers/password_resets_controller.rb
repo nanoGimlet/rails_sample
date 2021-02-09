@@ -18,7 +18,7 @@ class PasswordResetsController < ApplicationController
       redirect_to root_url
     else
       flash.now[:danger] = "メールアドレスが間違っています。"
-      render :'new'
+      render :new
     end
   end
 
@@ -29,7 +29,7 @@ class PasswordResetsController < ApplicationController
     if params[:user][:password].empty?
       # パスワードが空欄だった
       user.errors.add(:password, :blank)
-      render :'edit' and return
+      render :edit and return
     end
 
     if user.update_attributes(user_params)
@@ -40,7 +40,7 @@ class PasswordResetsController < ApplicationController
     else
       # パスワード変更に失敗した
       flash[:failure] = "パスワードのリセットに失敗しました。"
-      render :'edit'
+      render :edit
     end
   end
 
